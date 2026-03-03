@@ -189,7 +189,7 @@ export default function Home() {
   }
 
   function buildBugReport(): string {
-    const u = errorUrl ?? url || "(no URL)";
+    const u = (errorUrl ?? url) || "(no URL)";
     const human = errorDetails ? errorToHumanMessage(errorDetails) : "";
     const tech = errorDetails ? JSON.stringify(errorDetails, null, 2) : "{}";
     return `URL
