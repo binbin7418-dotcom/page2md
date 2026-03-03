@@ -12,7 +12,7 @@ const turndown = new TurndownService({
 });
 
 turndown.addRule('strikethrough', {
-  filter: ['del', 's', 'strike'],
+  filter: (node) => ["del","s","strike"].includes((node as any).nodeName?.toLowerCase()),
   replacement: (content) => `~~${content}~~`,
 });
 
