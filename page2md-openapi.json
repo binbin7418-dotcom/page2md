@@ -1,0 +1,56 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Page2MD",
+    "version": "1.0.0",
+    "description": "Convert any web page to clean Markdown. Send a URL, get back the article content as Markdown with title and metadata — built for LLM/RAG pipelines, archiving and content migration. Free web tool (no key): https://page2md-api.pages.dev/url-to-markdown",
+    "contact": { "name": "NewKwLab", "email": "support@newkwlab.com", "url": "https://github.com/binbin7418-dotcom/page2md" },
+    "license": { "name": "MIT", "url": "https://opensource.org/licenses/MIT" }
+  },
+  "servers": [ { "url": "https://page2md-api.pages.dev", "description": "Public API" } ],
+  "paths": {
+    "/convert": {
+      "post": {
+        "summary": "Convert one web page to Markdown",
+        "operationId": "convertUrl",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ConvertRequest" }, "example": { "url": "https://en.wikipedia.org/wiki/Markdown" } } }
+        },
+        "responses": {
+          "200": { "description": "Conversion succeeded", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ConvertResult" } } } },
+          "400": { "$ref": "#/components/responses/Error" },
+          "413": { "$ref": "#/components/responses/Error" },
+          "415": { "$ref": "#/components/responses/Error" },
+          "422": { "$ref": "#/components/responses/Error" },
+          "502": { "$ref": "#/components/responses/Error" },
+          "504": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/convert/batch": {
+      "post": {
+        "summary": "Convert multiple web pages to Markdown in one call",
+        "operationId": "convertBatch",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "required": ["urls"], "properties": { "urls": { "type": "array", "items": { "type": "string", "format": "uri" }, "example": ["https://en.wikipedia.org/wiki/Markdown", "https://example.com"] } } } } }
+        },
+        "responses": {
+          "200": { "description": "Per-URL results in request order; each item is a ConvertResult or an Error object", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "object" } } } } },
+          "400": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ConvertRequest": { "type": "object", "required": ["url"], "properties": { "url": { "type": "string", "format": "uri", "description": "http or https URL of an HTML page" } } },
+      "ConvertResult": { "type": "object", "required": ["markdown", "title", "url"], "properties": { "markdown": { "type": "string" }, "title": { "type": "string" }, "url": { "type": "string", "format": "uri" }, "byline": { "type": "string" }, "excerpt": { "type": "string" } } },
+      "Error": { "type": "object", "properties": { "error": { "type": "object", "properties": { "code": { "type": "string", "example": "CONTENT_TOO_SHORT" }, "message": { "type": "string" } } } } }
+    },
+    "responses": {
+      "Error": { "description": "Error with a machine-readable code", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+    }
+  }
+}
